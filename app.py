@@ -6,6 +6,11 @@ import tempfile
 from io import BytesIO
 import zipfile
 
+from langchain_groq import ChatGroq
+from langchain_core.prompts import ChatPromptTemplate,MessagesPlaceholder
+from langchain_core.messages import HumanMessage
+from langchain_core.output_parsers import StrOutputParser
+
 st.sidebar.title("Aidash image team assistant")
 st.sidebar.header("Environment selection")
 options = st.sidebar.radio("Choose a page:", ["Shapefile to kml", "Shapefile to feature ZIP", "AI assistant"])
