@@ -1,4 +1,0 @@
-software-properties-common
-gdal-bin
-libgdal-dev
-libspatialindex-dev
