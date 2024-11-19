@@ -5,3 +5,4 @@ shapely==1.8.5.post1
 pandas==1.5.3
 numpy==1.23.5
 simplekml
+gdal==3.4.3
