@@ -1,8 +1,7 @@
 geopandas==0.12.2
-pyproj==3.5.0
 fiona==1.8.21
 shapely==1.8.5.post1
+pyproj==3.5.0
+gdal==3.4.3
 pandas==1.5.3
 numpy==1.23.5
-simplekml
-gdal==3.4.3
