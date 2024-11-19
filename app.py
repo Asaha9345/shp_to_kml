@@ -2,7 +2,7 @@ import streamlit as st
 import geopandas as gpd
 import simplekml
 import os
-from fiona.errors import DriverError
+# from fiona.errors import DriverError
 from io import BytesIO
 import zipfile
 
@@ -40,8 +40,8 @@ def shp_to_kml(shp_path, output_dir):
         return True
     except SyntaxError:
         st.error("Please check the given path!")
-    except (FileNotFoundError, DriverError):
-        st.error("The file was not found in the specified location.")
+    # except (FileNotFoundError, DriverError):
+    #     st.error("The file was not found in the specified location.")
     except KeyError:
         st.error("Please check if the 'ID' field (case-sensitive) exists in the shapefile.")
     return False
