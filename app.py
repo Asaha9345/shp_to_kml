@@ -2,12 +2,9 @@ import streamlit as st
 import geopandas as gpd
 import simplekml
 import os
-from io import BytesIO
-import zipfile
 
 # Initialize a dictionary to keep track of ID counts
 id_count = {}
-
 
 def shp_to_kml(shp_path, output_dir):
     """
@@ -36,15 +33,13 @@ def shp_to_kml(shp_path, output_dir):
             
             kml.save(kml_path)
         
-        return True
+        st.success("KML files have been exported successfully!")
     except KeyError:
         st.error("Please check if the 'ID' field (case-sensitive) exists in the shapefile.")
-    return False
-
 
 # Streamlit app layout
 st.title("Shapefile to KML Converter")
-st.write("Upload all files associated with a shapefile (e.g., .shp, .shx, .dbf, .prj), and download the converted KML files.")
+st.write("Upload all files associated with a shapefile (e.g., .shp, .shx, .dbf, .prj), specify an output location, and convert the shapefile into KML files.")
 
 # File uploader
 uploaded_files = st.file_uploader(
@@ -53,9 +48,12 @@ uploaded_files = st.file_uploader(
     accept_multiple_files=True
 )
 
+# Directory input
+output_dir = st.text_input("Output Directory", help="Specify the directory where the KML files will be saved.")
+
 # Submit button
 if st.button("Convert to KML"):
-    if uploaded_files:
+    if uploaded_files and output_dir.strip() != "":
         # Create a temporary directory to save the uploaded files
         temp_dir = "temp_shp"
         os.makedirs(temp_dir, exist_ok=True)
@@ -72,36 +70,14 @@ if st.button("Convert to KML"):
         if shp_file:
             shp_path = os.path.join(temp_dir, shp_file.name)
             
-            # Output directory for KML files
-            output_dir = os.path.join(temp_dir, "kml_output")
-            os.makedirs(output_dir, exist_ok=True)
-            
             # Call the conversion function
-            success = shp_to_kml(shp_path, output_dir)
-            
-            if success:
-                # Create a ZIP file for download
-                zip_buffer = BytesIO()
-                with zipfile.ZipFile(zip_buffer, "w") as zf:
-                    for file_name in os.listdir(output_dir):
-                        file_path = os.path.join(output_dir, file_name)
-                        zf.write(file_path, file_name)
-
-                # Provide the ZIP file for download
-                st.download_button(
-                    label="Download KML Files",
-                    data=zip_buffer.getvalue(),
-                    file_name="kml_files.zip",
-                    mime="application/zip",
-                )
-            else:
-                st.error("An error occurred during conversion.")
+            shp_to_kml(shp_path, output_dir)
         else:
             st.error("No .shp file found in the uploaded files.")
         
         # Clean up the temporary directory
-        for file_name in os.listdir(temp_dir):
-            os.remove(os.path.join(temp_dir, file_name))
+        for file in os.listdir(temp_dir):
+            os.remove(os.path.join(temp_dir, file))
         os.rmdir(temp_dir)
     else:
-        st.error("Please upload all shapefile components.")
+        st.error("Please upload all shapefile components and specify an output directory.")
