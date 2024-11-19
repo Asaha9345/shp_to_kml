@@ -102,3 +102,17 @@ if options=="Shapefile to kml":
                 st.error(f"An unexpected error occurred: {e}")
         else:
             st.error("Please upload all shapefile components.")
+
+if options=="AI assistant":
+    groq_api_key='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'
+    llm=ChatGroq(model='Gemma2-9b-it',groq_api_key=groq_api_key)
+    prompt=ChatPromptTemplate(
+    [
+        ("system","You are a helpful AI assitant. You have to reply to the user."),
+        MessagesPlaceholder(variable_name="messege")
+    ])
+    parser=StrOutputParser()
+    chain=prompt|llm|parser
+    human=st.text_input("What's in your mind today?")
+    response=chain.invoke(["messege",HumanMessage(content=human)])
+    st.write(response)
