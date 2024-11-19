@@ -1,5 +1,5 @@
 geopandas==0.14.2
-fiona==1.8.21
+fiona==1.9.4
 pyproj
 shapely
 pandas
