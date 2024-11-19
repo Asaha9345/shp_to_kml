@@ -3,3 +3,5 @@ fiona>=1.9
 pyproj
 shapely
 simplekml
+langchain_groq
+langchain_core
