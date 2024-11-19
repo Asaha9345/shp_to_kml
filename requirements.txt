@@ -1,3 +1,4 @@
 geopandas==0.14.2
+fiona
 streamlit
 simplekml
