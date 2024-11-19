@@ -6,7 +6,8 @@ import tempfile
 from io import BytesIO
 import zipfile
 
-st.sidebar.title("Environment selection")
+st.sidebar.title("Aidash image team assistant")
+st.sidebar.header("Environment selection")
 options = st.sidebar.radio("Choose a page:", ["Shapefile to kml", "Shapefile to feature ZIP", "AI assistant"])
 if options=="Shapefile to kml":
     # Streamlit app layout
