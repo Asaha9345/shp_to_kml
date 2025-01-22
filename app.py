@@ -30,6 +30,7 @@ if options=="Shapefile to kml":
 
     # Shapefile to KML conversion function
     def shp_to_kml(shp_path, output_dir, field_name):
+        ID_count = {}
         try:
             # Read the shapefile into a GeoDataFrame
             data = gpd.read_file(shp_path)
@@ -45,7 +46,12 @@ if options=="Shapefile to kml":
                 polygon.outerboundaryis = [
                     tuple(coord) for coord in row.geometry.exterior.coords
                 ]
-                kml.save(os.path.join(output_dir, f"ID_{row[field_name]}.kml"))
+                if row['ID'] in ID_count:
+                    ID_count[row['ID']] += 1
+                    kml.save(output_dir + "\\" + "ID_" + str(row['ID']) + "_" + str(ID_count[row['ID']]-1) + ".kml")
+                else:
+                    ID_count[row['ID']] = 1
+                    kml.save(output_dir + "\\" + "ID_" + str(row['ID']) + ".kml")
 
             return True
         except Exception as e:
