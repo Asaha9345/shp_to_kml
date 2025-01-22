@@ -6,11 +6,6 @@ import tempfile
 from io import BytesIO
 import zipfile
 
-from langchain_groq import ChatGroq
-from langchain_core.prompts import ChatPromptTemplate,MessagesPlaceholder
-from langchain_core.messages import HumanMessage
-from langchain_core.output_parsers import StrOutputParser
-
 st.sidebar.title("Aidash image team assistant")
 st.sidebar.header("Environment selection")
 options = st.sidebar.radio("Choose a page:", ["Shapefile to kml", "Shapefile to feature ZIP"])
@@ -30,18 +25,6 @@ if options=="Shapefile to kml":
 
     # Shapefile to KML conversion function
     def shp_to_kml(shp_path, output_dir, field_name):
-        """
-        Converts a shapefile into individual KML files for each feature.
-        
-        Parameters:
-        shp_path (str): Path to the shapefile.
-        output_dir (str): Directory where KML files will be saved.
-        field_name (str): Field name to use for KML file naming.
-        
-        Returns:
-        bool: True if conversion succeeds, False otherwise.
-        """
-        ID_count = {}
         try:
             # Read the shapefile into a GeoDataFrame
             data = gpd.read_file(shp_path)
@@ -50,50 +33,19 @@ if options=="Shapefile to kml":
             if data.crs is None or data.crs.to_string() != "EPSG:4326":
                 data = data.to_crs(epsg=4326)
             
-            # Create output directory if it doesn't exist
-            if not os.path.exists(output_dir):
-                os.makedirs(output_dir)
-            
             # Generate KML files
             for _, row in data.iterrows():
                 kml = simplekml.Kml()
-                
-                # Sanitize the field value for use in filenames
-                key = str(row[field_name])
-                sanitized_key = re.sub(r'[<>:"/\\|?*]', '_', key)  # Replace invalid characters
-                
-                # Add geometry to the KML
-                if row.geometry.type == 'Polygon' or row.geometry.type == 'MultiPolygon':
-                    polygon = kml.newpolygon(name=sanitized_key)
-                    if row.geometry.type == 'Polygon':
-                        polygon.outerboundaryis = [
-                            tuple(coord) for coord in row.geometry.exterior.coords
-                        ]
-                    elif row.geometry.type == 'MultiPolygon':
-                        # For MultiPolygons, use only the first geometry part
-                        polygon.outerboundaryis = [
-                            tuple(coord) for coord in row.geometry.geoms[0].exterior.coords
-                        ]
-                else:
-                    raise ValueError(f"Unsupported geometry type: {row.geometry.type}")
-                
-                # Handle duplicate field values
-                if sanitized_key in ID_count:
-                    ID_count[sanitized_key] += 1
-                    filename = f"ID_{sanitized_key}_{ID_count[sanitized_key] - 1}.kml"
-                else:
-                    ID_count[sanitized_key] = 1
-                    filename = f"ID_{sanitized_key}.kml"
-                
-                # Save KML file
-                file_path = os.path.join(output_dir, filename)
-                kml.save(file_path)
-    
+                polygon = kml.newpolygon(name=str(row[field_name]))
+                polygon.outerboundaryis = [
+                    tuple(coord) for coord in row.geometry.exterior.coords
+                ]
+                kml.save(os.path.join(output_dir, f"ID_{row[field_name]}.kml"))
+
             return True
         except Exception as e:
-            print(f"Error during conversion: {e}")
+            st.error(f"Error during conversion: {e}")
             return False
-
 
     if uploaded_files:
         try:
@@ -242,4 +194,3 @@ if options == "Shapefile to feature ZIP":
                 st.error(f"An unexpected error occurred: {e}")
         else:
             st.error("Please upload all shapefile components.")
-
