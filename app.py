@@ -47,11 +47,11 @@ if options=="Shapefile to kml":
                     tuple(coord) for coord in row.geometry.exterior.coords
                 ]
                 if row['ID'] in ID_count:
-                    ID_count[row['ID']] += 1
-                    kml.save(output_dir + "\\" + "ID_" + str(row['ID']) + "_" + str(ID_count[row['ID']]-1) + ".kml")
+                    ID_count[row[field_name]] += 1
+                    kml.save(output_dir + "\\" + "ID_" + str(row[field_name]) + "_" + str(ID_count[row[field_name]]-1) + ".kml")
                 else:
-                    ID_count[row['ID']] = 1
-                    kml.save(output_dir + "\\" + "ID_" + str(row['ID']) + ".kml")
+                    ID_count[row[field_name]] = 1
+                    kml.save(output_dir + "\\" + "ID_" + str(row[field_name]) + ".kml")
 
             return True
         except Exception as e:
